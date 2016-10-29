@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+<title>10x10 Correlation Matrix</title>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+
+<body>
+</body>
+
+
+<style>
+
+</style>
+
+
+<script>
+
+attributes = ['Type 1','Total','HP','Attack','Defense','Sp. Atk','Sp. Def','Speed','Generation','Legendary']
+
+attributes_matrix = [];
+
+//Build up our matrix of relationships 
+attributes.forEach( function(a, x){
+	attributes.forEach(function(b,y){
+		attributes_matrix.push({a:a, b: b, x: x, y: y});
+	})
+})
+
+
+d3.select("body").append("svg").attr("height",1000).attr("width",1000);
+
+d3.csv("correlation_matrix.csv", build_matrix);
+
+function build_matrix(data){
+	//Parse into floats
+
+	data.forEach(function (d){
+		attributes.forEach(function(attr){
+			d[attr] = parseFloat(d[attr])
+		});
+	});
+
+
+}
+
+
+
+
+</script>
+
+
+</html>
+

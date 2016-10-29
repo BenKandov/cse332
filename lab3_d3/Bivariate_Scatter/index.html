@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+<title>Bivariate Scatterplot</title>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+</head>
+
+
+<body>
+
+
+<select id="attr1Select">
+<option value="Type 1">Type</option>
+<option value="Total">Total</option>
+<option value="HP">HP</option>
+<option value="Attack">Attack</option>
+<option value="Defense">Defense</option>
+<option value="Sp. Atk">Sp. Attack</option>
+<option value="Sp. Def">Sp. Def</option>
+<option value="Speed">Speed</option>
+<option value="Generation">Generation</option>
+
+</select>
+
+<div id="label">
+VS
+</div>
+
+<select id="attr2Select">
+<option value="Type 1">Type</option>
+<option value="Total">Total</option>
+<option value="HP">HP</option>
+<option value="Attack">Attack</option>
+<option value="Defense">Defense</option>
+<option value="Sp. Atk">Sp. Attack</option>
+<option value="Sp. Def">Sp. Def</option>
+<option value="Speed">Speed</option>
+<option value="Generation">Generation</option>
+
+</select>
+	
+
+
+
+
+</body>
+
+<style>
+#attr1Select{
+	position:absolute;
+	top:39%;
+
+}
+
+#attr2Select{
+	position:absolute;
+	top:30%;
+
+}
+	
+#label{
+	position: absolute;
+	top:35%;
+}
+</style>
+
+
+
+<script>
+
+function get_and_use_data(attr1, attr2, file){
+
+	d3.csv(file, function(data){
+		make_scatter_plot(attr1, attr2, data);
+
+	});
+
+}
+
+function calculate_max(data,column){
+	var max = 0;
+
+	for(var i = 0; i < data.length; i++){
+		
+		if ( parseInt(data[i][column],10) > max){
+			
+			max = data[i][column];
+		}
+		
+
+	}
+
+
+	return max;
+}
+
+
+function calculate_min(data,column){
+	var min = 100000000;
+
+	for(var i = 0; i<data.length; i++){
+		
+
+		if( parseInt(data[i][column],10) < min){
+			min = data[i][column];
+		}
+
+	}
+	
+
+	return min;
+}
+
+function make_scatter_plot(attr1, attr2, data){
+	d3.selectAll("svg > *").remove();
+
+//init the div on which we put the axis/scatterplot
+	var height = 500;
+	var width = 700;
+	var svgContainer = d3.select("body").append("svg")
+					.attr("width", width)
+					.attr("height",height)
+					.style("position","absolute")
+					.style("bottom","0")
+					.style("left","25%");
+
+
+
+	//setup x axis				
+	var xAxisScale = d3.scale.linear()			
+				.domain([calculate_min(data,attr1),calculate_max(data,attr1)] )		
+				.range([0,width]);
+	var xMap = function(d){
+			return xAxisScale(d[attr1])	
+					
+	};
+
+	var xAxis = d3.svg.axis()
+					.scale(xAxisScale)
+					.orient("bottom")
+					.ticks(5);
+
+
+	//setup y axis
+	var yAxisScale = d3.scale.linear()			
+			.domain([calculate_min(data,attr2),calculate_max(data,attr2)] )
+			.range([height-100,0]);	
+
+
+	var yMap = function(d){
+			return yAxisScale(d[attr2])
+	};
+
+	var dotColor = function(d){
+		colors = ["rgb(220,220,220)","rgb(124,252,0)","rgb(226,88,34)","blue", "rgb(153,76,0)","rgb(153,76,0)"
+		,"rgb(176,224,230)","‎#E6E6FA","	#F5F5DC", "#DEB887","#9dc100","	#9400D3","#ffff00",
+		"#ffb6c1","#00FFFF","#551A8B","#000000","#c0c0c0","#ffd1dc"];
+
+		for(var i = 0; i < colors.length ; i++){
+			if(i == d["Type 1"]){
+				return colors[i];
+			}
+		}
+
+	};
+
+	var yAxis = d3.svg.axis()
+					.scale(yAxisScale)
+					.orient("right")
+					.ticks(5);
+
+
+
+	
+	var xAxisGroup = svgContainer.append("g")
+					.attr("class","axisX")
+					
+					.attr("transform", "translate(0, "+ (height-100) + ")")
+					.call(xAxis)
+	
+
+	var yAxisGroup = svgContainer.append("g")
+					.attr("class","axisY")
+
+					.call(yAxis)
+
+
+
+	//let's get down to plotting the data!!
+	svgContainer.selectAll(".dot")
+		.data(data)
+		.enter().append("circle")
+			.attr("r", 3)
+			.attr("class", "dot")
+			.attr("cx", xMap)
+			.style("opacity",.7)
+			.style("fill", dotColor)
+			.attr("cy",yMap);
+
+
+}
+
+var attribute1_select = document.getElementById("attr1Select");
+
+var attribute2_select = document.getElementById("attr2Select");
+
+
+attribute1_select.onchange = function(){
+	get_and_use_data(attribute1_select.options[attribute1_select.selectedIndex].value,attribute2_select.options[attribute2_select.selectedIndex].value, "pokemon_processed.csv");
+}
+
+attribute2_select.onchange = function(){
+	get_and_use_data(attribute1_select.options[attribute1_select.selectedIndex].value,attribute2_select.options[attribute2_select.selectedIndex].value, "pokemon_processed.csv");
+}
+
+
+
+
+get_and_use_data("Type 1", "Type 1" , "pokemon_processed.csv");
+
+
+</script>
+
+
+</html>
