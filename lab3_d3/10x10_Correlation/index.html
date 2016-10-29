@@ -30,12 +30,17 @@ attributes.forEach( function(a, x){
 	})
 })
 
-
-d3.select("body").append("svg").attr("height",1000).attr("width",1000);
+ 
+var container = d3.select("body").append("svg").attr("height",700).attr("width",700)
+.style("position", "absolute")
+.style("left","30%" )
+.style("top","10%");
 
 d3.csv("correlation_matrix.csv", build_matrix);
 
+var att_inc = 0;
 function build_matrix(data){
+	
 	//Parse into floats
 
 	data.forEach(function (d){
@@ -44,7 +49,90 @@ function build_matrix(data){
 		});
 	});
 
+	d3.select("svg")
+		.selectAll("g")
+		.data(attributes_matrix)
+		.enter()
+		.append("g")
+		.attr("transform", function (d) {
+			if(d.x==0){
+				d3.select(this)
+				.append("text")
+				.attr("x", -45)
+				.attr("y", d.y -10)
+				.attr("transform", "rotate(-90)")
+				.style("font-size", "11px")
+				.text(function(){
+					var label = attributes[att_inc];
+					att_inc++;
+					if(label == "Generation"){
+						label = "Gen";
+					}
+					if(label == "Legendary"){
+						label = "Legend";
+					}
+					if (att_inc == 10){
+						att_inc = 0;
+					}
+					return label;
+				});
+			}
+			if(d.y >8){
+				d3.select(this)
+					.append("text")
+					.attr("x", d.x)
+					.attr("y", d.y+60)
+					.style("font-size", "11px")
+					.text(function(){
+						var label = attributes[att_inc];
+						att_inc++;
+						if(label == "Generation"){
+							label = "Gen";
+						}
+						if(label == "Legendary"){
+							label = "Legend";
+						}
+						if (att_inc == 10){
+							att_inc = 0;
+						}
+						return label;
+					});
+			}
+			return "translate(" + (d.x * 50 +50) + "," + (d.y * 50) + ")" 
+		});
+	
+	d3.selectAll("g")
+		.each(function(matrix, i){
+			
+			if (i>9){
+				i = i %10 ;
+				if ( i == 0){
+					att_inc++;
+				}
+			}
+			
+	
+			d3.select(this).append("rect")
+					.style("fill", function(){
+						if (data[i][attributes[att_inc]]>0 ){
+							//console.log(data[i][attributes[att_inc]]);
+							return "hsla(4, 100%, 49%," + data[i][attributes[att_inc]]  +")"; 
+						}
+						else{
+							//console.log(data[i][attributes[att_inc]]);
+							var temp = 0 - data[i][attributes[att_inc]];
+							return "hsla(250, 100%, 49%," + temp  +")"; 
+						}
+					})
+					.style("stroke","black").style("stroke-width",1)
+					.attr("height",50)
+					.attr("width",50);
+				
+		
 
+
+	});
+	
 }
 
 
