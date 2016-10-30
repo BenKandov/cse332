@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>
+MDS 1-[Correlation] Distance
+</title>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+
+
+</body>
+
+
+<script>
+//This is basically just the scatter plot
+
+function get_and_use_data(attr1, attr2, file){
+
+	d3.csv(file, function(data){
+
+		make_scatter_plot(attr1, attr2, data);
+
+	});
+
+}
+
+function calculate_max(data,column){
+	var max = 0;
+
+	for(var i = 0; i < data.length; i++){		
+		if ( parseFloat(data[i][column]) > max){			
+			max = data[i][column];
+		}		
+	}
+	return max;
+}
+
+
+function calculate_min(data,column){
+	var min = 100000000;
+	for(var i = 0; i<data.length; i++){	
+
+		if( parseFloat(data[i][column]) < min){
+			min = data[i][column];
+		}
+	}
+	return min;
+}
+
+
+function make_scatter_plot(attr1, attr2, data){
+	d3.selectAll("svg > *").remove();
+
+	//init container 
+	var height = 500;
+	var width = 700;
+	var svgContainer = d3.select("body").append("svg")
+						.attr("width", width)
+						.attr("height", height)
+						.style("position", "absolute")
+						.style("bottom","0%")
+						.style("left","25%");
+
+
+	//X Axis
+	var xAxisScale = d3.scale.linear()
+					.domain([calculate_min(data,attr1), calculate_max(data,attr1)])
+					.range([0,width])
+	var xMap = function(d){
+		return xAxisScale(d[attr1])
+	};
+
+	var xAxis = d3.svg.axis()
+					.scale(xAxisScale)
+					.orient("bottom")
+					.ticks(5);
+
+	//Y Axis
+	var yAxisScale = d3.scale.linear()
+					.domain([calculate_min(data,attr2), calculate_max(data,attr2)])
+					.range([height-100,0]);
+
+	var yMap = function(d){
+		return yAxisScale(d[attr2]);
+	}
+	
+	var yAxis = d3.svg.axis()
+					.scale(yAxisScale)
+					.orient("right")
+					.ticks(5);
+	var xAxisGroup = svgContainer.append("g")
+					.attr("class","axisX")
+					
+					.attr("transform", "translate(0, "+ (height-100) + ")")
+					.call(xAxis);
+	
+
+	var yAxisGroup = svgContainer.append("g")
+					.attr("class","axisY")
+
+					.call(yAxis);
+
+
+	//plots into svg container
+	svgContainer.selectAll(".dot")
+		.data(data)
+		.enter().append("circle")
+			.attr("r",3)
+			.attr("class","dot")
+			.attr("cx",xMap)
+			.style("opacity",.7)
+			.style("fill","blue")
+			.attr("cy", yMap);
+
+}
+
+get_and_use_data("Column1","Column2","correlation_mds.csv");
+
+
+
+
+
+
+
+
+
+
+</script>
+
+</html>
