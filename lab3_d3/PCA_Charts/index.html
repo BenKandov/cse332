@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>
+PCA Charts
+</title>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+
+<body>
+
+</body>
+
+
+<script>
+
+
+
+function get_and_use_data(attr1, attr2, file){
+
+	d3.csv(file, function(data){
+		make_bar_chart(attr1, 10, data);
+
+	});
+
+}
+
+function calculate_max(data,column){
+	var max = 0;
+	for(var i = 0; i < data.length; i++){
+		if ( parseFloat(data[i][column]) > max){			
+			max = data[i][column];
+		}
+	}
+	return max;
+}
+function calculate_min(data,column){
+	var min = 100000000;
+	for(var i = 0; i<data.length; i++){
+		if( parseFloat(data[i][column]) < min){
+			min = data[i][column];
+		}
+	}
+	return min;
+}
+
+
+function make_bar_chart(attr1, num, data){
+
+
+	var svg = d3.select("body")
+		.append("svg")
+		.attr("width",500)
+		.attr("align", "center")
+		.attr("height",500);
+	
+	bucket_array = new Array(num).fill(0);
+
+	bucket_width = calculate_max(data, attr1)/num ;
+
+	for (var i = 0; i<10;i++){
+		var value = parseFloat(data[i]['Column1']);
+
+		bucket_array[i] = value;
+		console.log(bucket_array)
+	}
+
+	svg.selectAll("rect")
+		.data(bucket_array)
+		.enter()
+		.append("rect")
+		.attr("x", function(d,i){
+			//console.log(i);
+			return 2 * i * (400/num);
+		})
+		.attr("y", function(d){
+	
+			return 500 - d*1000;
+		})
+		.attr("width", 400/num)
+		.attr("height", function(d){
+			return d*10000;
+		})
+		.attr("fill",function(d){
+			return "blue";
+		});
+}
+
+get_and_use_data("Column1", "column2", "PCAd_Data.csv");
+
+
+
+
+
+</script>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
