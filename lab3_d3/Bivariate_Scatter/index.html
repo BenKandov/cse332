@@ -135,8 +135,7 @@ function make_scatter_plot(attr1, attr2, data){
 				.domain([calculate_min(data,attr1),calculate_max(data,attr1)] )		
 				.range([0,width]);
 	var xMap = function(d){
-			return xAxisScale(d[attr1])	
-					
+		return xAxisScale(d[attr1]);				
 	};
 
 	var xAxis = d3.svg.axis()
@@ -152,7 +151,7 @@ function make_scatter_plot(attr1, attr2, data){
 
 
 	var yMap = function(d){
-			return yAxisScale(d[attr2])
+		return yAxisScale(d[attr2]);
 	};
 
 	var dotColor = function(d){
